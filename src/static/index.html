@@ -10,6 +10,9 @@
     <header>
       <h1>Mergington High School</h1>
       <h2>Extracurricular Activities</h2>
+      <nav style="margin-top:10px;">
+        <a href="progress.html" style="color:#1a237e;font-weight:bold;">Análise individual do progresso do aluno</a>
+      </nav>
     </header>
 
     <main>
@@ -20,8 +23,7 @@
         </div>
       </section>
 
-      <section id="activities-container">
-        <h3>Available Activities</h3>
+      <section id="filters-section">
         <div id="filters-container">
           <input type="text" id="search-input" placeholder="Buscar por nome, descrição ou horário..." />
           <select id="category-filter">
@@ -33,28 +35,14 @@
             <option value="schedule">Ordenar por horário</option>
           </select>
         </div>
+      </section>
+
+      <section id="activities-container">
+        <h3>Available Activities</h3>
         <div id="activities-list">
           <!-- Activities will be loaded here -->
           <p>Loading activities...</p>
         </div>
-      </section>
-
-      <section id="signup-container">
-        <h3>Sign Up for an Activity</h3>
-        <form id="signup-form">
-          <div class="form-group">
-            <label for="email">Student Email:</label>
-            <input type="email" id="email" required placeholder="your-email@mergington.edu" />
-          </div>
-          <div class="form-group">
-            <label for="activity">Select Activity:</label>
-            <select id="activity" required>
-              <option value="">-- Select an activity --</option>
-              <!-- Activity options will be loaded here -->
-            </select>
-          </div>
-          <button type="submit">Sign Up</button>
-        </form>
         <div id="message" class="hidden"></div>
       </section>
     </main>
