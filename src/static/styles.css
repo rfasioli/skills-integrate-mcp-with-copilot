@@ -1,3 +1,40 @@
+/* Página de busca de usuário por email */
+#user-search-section {
+  background: #e3f2fd;
+  padding: 24px;
+  border-radius: 8px;
+  max-width: 500px;
+  margin: 40px auto;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+#user-search-section input[type="text"] {
+  width: 70%;
+  padding: 10px;
+  border: 1px solid #bbb;
+  border-radius: 4px;
+  font-size: 16px;
+  margin-right: 10px;
+}
+#user-search-section button {
+  padding: 10px 18px;
+  font-size: 16px;
+  border-radius: 5px;
+  background: #1a237e;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+#user-search-section button:hover {
+  background: #3949ab;
+}
+#user-search-result {
+  margin-top: 24px;
+  background: #fff;
+  border-radius: 6px;
+  padding: 18px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
 /* Página de progresso individual */
 #progress-section {
   background: #fffbe7;
