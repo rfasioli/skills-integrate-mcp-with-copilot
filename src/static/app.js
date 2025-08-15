@@ -1,6 +1,7 @@
 
 document.addEventListener("DOMContentLoaded", () => {
   const activitiesList = document.getElementById("activities-list");
+  const statsBarChart = document.getElementById("stats-bar-chart");
   const activitySelect = document.getElementById("activity");
   const signupForm = document.getElementById("signup-form");
   const messageDiv = document.getElementById("message");
@@ -18,11 +19,42 @@ document.addEventListener("DOMContentLoaded", () => {
       allActivities = activities;
       renderActivities();
       populateCategories();
+      renderStatistics();
     } catch (error) {
       activitiesList.innerHTML =
         "<p>Failed to load activities. Please try again later.</p>";
+      if (statsBarChart) statsBarChart.innerHTML = "<p>Erro ao carregar estatísticas.</p>";
       console.error("Error fetching activities:", error);
     }
+  }
+
+  function renderStatistics() {
+    if (!statsBarChart) return;
+    // Limpa gráfico
+    statsBarChart.innerHTML = "";
+    const data = Object.entries(allActivities);
+    if (data.length === 0) {
+      statsBarChart.innerHTML = "<p>Nenhuma atividade encontrada.</p>";
+      return;
+    }
+    // Encontrar máximo de participantes para escala
+    const max = Math.max(...data.map(([_, d]) => d.participants.length));
+    // Renderizar barras
+    data.forEach(([name, details]) => {
+      const barContainer = document.createElement("div");
+      barContainer.className = "bar-container";
+      const label = document.createElement("span");
+      label.className = "bar-label";
+      label.textContent = name;
+      const bar = document.createElement("div");
+      bar.className = "bar";
+      const count = details.participants.length;
+      bar.style.width = max > 0 ? `${(count / max) * 100}%` : "0%";
+      bar.textContent = `${count} participante${count !== 1 ? 's' : ''}`;
+      barContainer.appendChild(label);
+      barContainer.appendChild(bar);
+      statsBarChart.appendChild(barContainer);
+    });
   }
 
   function renderActivities() {
