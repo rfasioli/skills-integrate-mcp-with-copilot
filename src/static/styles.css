@@ -1,3 +1,39 @@
+/* Estatísticas - Gráfico de barras */
+#statistics-container {
+  background-color: #fffbe7;
+  margin-bottom: 30px;
+}
+
+#stats-bar-chart {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.bar-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.bar-label {
+  min-width: 120px;
+  font-weight: bold;
+  color: #1a237e;
+  margin-right: 10px;
+}
+
+.bar {
+  height: 28px;
+  background: linear-gradient(90deg, #42a5f5 60%, #1976d2 100%);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  padding-left: 12px;
+  border-radius: 5px;
+  font-size: 15px;
+  transition: width 0.4s;
+  box-shadow: 0 1px 4px rgba(66, 165, 245, 0.15);
+}
 * {
   box-sizing: border-box;
   margin: 0;
