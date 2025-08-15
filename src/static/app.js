@@ -2,14 +2,27 @@
 document.addEventListener("DOMContentLoaded", () => {
   const activitiesList = document.getElementById("activities-list");
   const statsBarChart = document.getElementById("stats-bar-chart");
-  const activitySelect = document.getElementById("activity");
-  const signupForm = document.getElementById("signup-form");
   const messageDiv = document.getElementById("message");
   const searchInput = document.getElementById("search-input");
   const categoryFilter = document.getElementById("category-filter");
   const sortFilter = document.getElementById("sort-filter");
-
   let allActivities = {};
+  let currentRegisterActivity = null;
+
+  // Modal para registro
+  let modal = document.createElement("div");
+  modal.id = "register-modal";
+  modal.className = "hidden";
+  modal.innerHTML = `
+    <div class="modal-content">
+      <span id="close-modal" class="close-modal">&times;</span>
+      <h4>Registrar estudante</h4>
+      <input type="email" id="modal-email" placeholder="your-email@mergington.edu" required />
+      <button id="modal-register-btn">Registrar</button>
+      <div id="modal-error" class="error hidden"></div>
+    </div>
+  `;
+  document.body.appendChild(modal);
 
   // Function to fetch activities from API
   async function fetchActivities() {
@@ -58,15 +71,10 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function renderActivities() {
-    // Clear loading message
     activitiesList.innerHTML = "";
-    activitySelect.innerHTML = '<option value="">-- Select an activity --</option>';
-
-    // Filtros
     const search = searchInput ? searchInput.value.toLowerCase() : "";
     const category = categoryFilter ? categoryFilter.value : "";
     const sortBy = sortFilter ? sortFilter.value : "name";
-
     let filtered = Object.entries(allActivities).filter(([name, details]) => {
       let matchesSearch =
         name.toLowerCase().includes(search) ||
@@ -75,8 +83,6 @@ document.addEventListener("DOMContentLoaded", () => {
       let matchesCategory = !category || (details.category === category);
       return matchesSearch && matchesCategory;
     });
-
-    // Ordenação
     filtered.sort((a, b) => {
       if (sortBy === "name") {
         return a[0].localeCompare(b[0]);
@@ -85,7 +91,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       return 0;
     });
-
     filtered.forEach(([name, details]) => {
       const activityCard = document.createElement("div");
       activityCard.className = "activity-card";
@@ -104,7 +109,6 @@ document.addEventListener("DOMContentLoaded", () => {
               </ul>
             </div>`
           : `<p><em>No participants yet</em></p>`;
-
       activityCard.innerHTML = `
         <h4>${name}</h4>
         <p>${details.description}</p>
@@ -113,20 +117,20 @@ document.addEventListener("DOMContentLoaded", () => {
         <div class="participants-container">
           ${participantsHTML}
         </div>
+        <button class="register-btn" data-activity="${name}">Registrar estudante</button>
       `;
-
       activitiesList.appendChild(activityCard);
-
-      // Add option to select dropdown
-      const option = document.createElement("option");
-      option.value = name;
-      option.textContent = name;
-      activitySelect.appendChild(option);
     });
-
-    // Add event listeners to delete buttons
     document.querySelectorAll(".delete-btn").forEach((button) => {
       button.addEventListener("click", handleUnregister);
+    });
+    document.querySelectorAll(".register-btn").forEach((button) => {
+      button.addEventListener("click", (e) => {
+        currentRegisterActivity = button.getAttribute("data-activity");
+        document.getElementById("modal-email").value = "";
+        document.getElementById("modal-error").classList.add("hidden");
+        modal.classList.remove("hidden");
+      });
     });
   }
 
@@ -190,50 +194,44 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Handle form submission
-  signupForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
-
-    const email = document.getElementById("email").value;
-    const activity = document.getElementById("activity").value;
-
+  // Modal events
+  document.getElementById("close-modal").onclick = () => {
+    modal.classList.add("hidden");
+  };
+  document.getElementById("modal-register-btn").onclick = async () => {
+    const email = document.getElementById("modal-email").value;
+    if (!email) {
+      document.getElementById("modal-error").textContent = "Informe um email válido.";
+      document.getElementById("modal-error").classList.remove("hidden");
+      return;
+    }
     try {
       const response = await fetch(
-        `/activities/${encodeURIComponent(
-          activity
-        )}/signup?email=${encodeURIComponent(email)}`,
+        `/activities/${encodeURIComponent(currentRegisterActivity)}/signup?email=${encodeURIComponent(email)}`,
         {
           method: "POST",
         }
       );
-
       const result = await response.json();
-
       if (response.ok) {
         messageDiv.textContent = result.message;
         messageDiv.className = "success";
-        signupForm.reset();
-
-        // Refresh activities list to show updated participants
+        modal.classList.add("hidden");
         fetchActivities();
       } else {
-        messageDiv.textContent = result.detail || "An error occurred";
-        messageDiv.className = "error";
+        document.getElementById("modal-error").textContent = result.detail || "Erro ao registrar.";
+        document.getElementById("modal-error").classList.remove("hidden");
       }
-
       messageDiv.classList.remove("hidden");
-
-      // Hide message after 5 seconds
       setTimeout(() => {
         messageDiv.classList.add("hidden");
       }, 5000);
     } catch (error) {
-      messageDiv.textContent = "Failed to sign up. Please try again.";
-      messageDiv.className = "error";
-      messageDiv.classList.remove("hidden");
+      document.getElementById("modal-error").textContent = "Erro ao registrar.";
+      document.getElementById("modal-error").classList.remove("hidden");
       console.error("Error signing up:", error);
     }
-  });
+  };
 
   // Eventos de filtro e busca
   if (searchInput) searchInput.addEventListener("input", renderActivities);
